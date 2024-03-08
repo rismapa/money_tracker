@@ -1,16 +1,14 @@
 import 'package:budget_tracker/app/data/database/database.dart';
 import 'package:budget_tracker/app/data/database/transaction_with_category.dart';
 import 'package:budget_tracker/app/modules/transaction/controllers/transaction_controller.dart';
+import 'package:budget_tracker/app/theme/theme.dart';
 import 'package:drift/drift.dart';
 import 'package:get/get.dart';
 
-class HomeController extends GetxController {
+class HistoryController extends GetxController {
   final db = AppDb();
 
-  RxInt totalIncome = 0.obs;
-
-  Stream<List<TransactionWithCategory>> getTransactionsByCategory(String type) {
-    final db = AppDb();
+  Stream<List<TransactionWithCategory>> getTransactionCategory() {
     final query = db.select(db.transactions).join([
       innerJoin(
         db.categories,
@@ -18,8 +16,9 @@ class HomeController extends GetxController {
       ),
     ]);
 
-    // Masukkan kriteria where ke dalam query
-    query.where(db.categories.type.equals(type));
+    query.orderBy([
+      OrderingTerm(expression: db.transactions.date, mode: OrderingMode.desc)
+    ]);
 
     return query.watch().map((rows) {
       return rows.map((row) {
@@ -32,24 +31,14 @@ class HomeController extends GetxController {
     });
   }
 
-  void calculateTotalIncome() async {
-    final transactionsStream = getTransactionsByCategory('income');
+  Future deleteTransactionCategory(int id) async {
+    await (db.transactions
+      ..delete()
+      ..deleteWhere((tbl) => tbl.id.equals(id)));
 
-    int total = 0;
-    transactionsStream.listen((List<TransactionWithCategory> transactions) {
-      for (TransactionWithCategory transaction in transactions) {
-        total += transaction.transaction.amount;
-      }
-      totalIncome.value = total;
-    });
-
-    totalIncome.value = total;
-  }
-
-  @override
-  void onInit() {
-    super.onInit();
-    calculateTotalIncome();
-    // calculateTotalExpense();
+    Get.back();
+    update();
+    Get.snackbar('Success', 'Transaction has been delete!',
+        colorText: greyColor);
   }
 }

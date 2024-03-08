@@ -1,5 +1,10 @@
 import 'package:get/get.dart';
 
+import '../modules/category/bindings/category_binding.dart';
+import '../modules/category/views/category_view.dart';
+
+import '../modules/history/bindings/history_binding.dart';
+import '../modules/history/views/history_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/introduction/bindings/introduction_binding.dart';
@@ -17,7 +22,7 @@ class AppPages {
   static final routes = [
     GetPage(
       name: _Paths.HOME,
-      page: () => const HomeView(),
+      page: () => HomeView(),
       binding: HomeBinding(),
     ),
     GetPage(
@@ -27,8 +32,18 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.TRANSACTION,
-      page: () => const TransactionView(),
+      page: () => TransactionView(),
       binding: TransactionBinding(),
+    ),
+    GetPage(
+      name: _Paths.CATEGORY,
+      page: () => const CategoryView(),
+      binding: CategoryBinding(),
+    ),
+    GetPage(
+      name: _Paths.HISTORY,
+      page: () => HistoryView(),
+      binding: HistoryBinding(),
     ),
   ];
 }
